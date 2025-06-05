@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anabolic Workout Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #6a0dad, #4b0082);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .generate-btn {
+            display: block;
+            margin: 0 auto 40px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #6a0dad, #4b0082);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(106, 13, 173, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(106, 13, 173, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .checkboxes {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #6a0dad;
+        }
+
+        .checkbox-group label {
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .workout-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .workout-title {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            border-left: 4px solid #6a0dad;
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .exercise-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .exercise-text {
+            flex: 1;
+            font-size: 1.1em;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+
+        .play-btn {
+            background: linear-gradient(45deg, #6a0dad, #4b0082);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(106, 13, 173, 0.4);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-icon, .stop-icon {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .stop-icon {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #6a0dad;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(106, 13, 173, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(106, 13, 173, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .checkboxes {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .generate-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .exercise-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .play-btn {
+                align-self: flex-end;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Place audio.mp3 file in the same folder as this HTML file -->
+    <audio id="workoutAudio" loop>
+        <source src="audio.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="container">
+        <h1>Anabolic Workout Generator</h1>
+        
+        <button class="generate-btn" id="generateBtn">GENERATE</button>
+        
+        <div id="errorMessage" class="error-message hidden">Please select at least one category!</div>
+        
+        <div class="checkboxes">
+            <div class="checkbox-group">
+                <input type="checkbox" id="upper" value="upper">
+                <label for="upper">Upper</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="core" value="core">
+                <label for="core">Core</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="legs" value="legs">
+                <label for="legs">Legs</label>
+            </div>
+        </div>
+
+        <div id="workoutSection" class="workout-section hidden">
+            <h2 class="workout-title">WORKOUT</h2>
+            <div id="workoutContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Exercise data
+        const exercises = {
+            upper: [
+                { name: "pull ups", reps: [5, 20, "max"], sets: [1, 2], squeeze: true },
+                { name: "weighted pull ups", reps: [5, 15], sets: [3, 4] },
+                { name: "push ups", reps: [30, 50, "max"], sets: [1, 4] },
+                { name: "weighted push ups", reps: [10, 25], sets: [1, 4] },
+                { name: "pseudo push ups", reps: [12, 25], sets: [2, 3] },
+                { name: "handstand push ups", reps: [5, 10], sets: [1, 3] },
+                { name: "strict dumbbell curls", reps: [5, 18], sets: [1, 3] },
+                { name: "hammer curls", reps: [8, 20], sets: [1, 3] },
+                { name: "skull crushers", reps: [10, 30], sets: [2, 4] },
+                { name: "diamond push ups", reps: [20, 35], sets: [1, 2] },
+                { name: "clap push ups", reps: [20, 30], sets: [1, 2] },
+                { name: "archer push ups", reps: [20, 30], sets: [1, 2] },
+                { name: "archer pull ups", reps: [6, 12], sets: [1, 2] },
+                { name: "lateral raises", reps: [12, 22], sets: [2, 4] },
+                { name: "leaning forward lateral raises", reps: [20, 30], sets: [1, 2] },
+                { name: "dumbbell rows", reps: [30, 40], sets: [1, 5], squeeze: true },
+                { name: "front lateral raises", reps: [12, 30], sets: [1, 2] },
+                { name: "tuck planche push ups", reps: [2, 5], sets: [2, 6] },
+                { name: "burpees", reps: [15, 25], sets: [1, 3] },
+                { name: "dips", reps: [20, 40, "max"], sets: [1, 2] },
+                { name: "weighted dips", reps: [15, 30], sets: [3, 4] },
+                { name: "dumbbell shoulder press", reps: [25, 35], sets: [1, 4] },
+                { name: "shrugs", reps: [1, 100], sets: [1, 5], squeeze: true },
+                { name: "pike push ups", reps: [20, 30], sets: [1, 3] },
+                { name: "rows", reps: [15, 25], sets: [2, 4], squeeze: true }
+            ],
+            core: [
+                { name: "sit ups", reps: [20, 40], sets: [1, 3] },
+                { name: "crunches", reps: [20, 40], sets: [1, 3], squeeze: true },
+                { name: "back extensions", reps: [30, 40], sets: [1, 3], squeeze: true },
+                { name: "bicycle crunches", reps: [20, 100], sets: [1, 5] },
+                { name: "plank", time: [60, 300], sets: [1, 3] },
+                { name: "side plank", time: [45, 90], sets: [1, 2] },
+                { name: "mountain climber", time: [45, 90], sets: [1, 2] },
+                { name: "V-ups", reps: [12, 20], sets: [1, 4] },
+                { name: "Alternating Superman", reps: [24, 40], sets: [1, 4] },
+                { name: "toes to bar", reps: [8, 15], sets: [1, 3] },
+                { name: "L-sit on floor", time: [20, 30], sets: [1, 3] },
+                { name: "Hanging L-sit", time: ["max"], sets: [1, 2] },
+                { name: "russian twists", reps: [30, 50], sets: [2, 4] },
+                { name: "flutter kicks", reps: [40, 100], sets: [1, 4] },
+                { name: "superman hold", time: [60, 90], sets: [1, 2] },
+                { name: "Hanging Leg Raise", reps: [15, 25], sets: [1, 3], squeeze: true }
+            ],
+            legs: [
+                { name: "calf raises", reps: [25, 40], sets: [4, 6], squeeze: true },
+                { name: "single leg romanian deadlift", reps: [12, 20], sets: [1, 4] },
+                { name: "weighted calf raises", reps: [15, 30], sets: [1, 5] },
+                { name: "bulgarian splits", reps: [20, 30], sets: [1, 3] },
+                { name: "weighted bulgarian splits", reps: [12, 20], sets: [1, 3] },
+                { name: "wall sit", time: [60, 240], sets: [1, 2] },
+                { name: "single leg wall sit", time: [30, 60], sets: [1, 2] },
+                { name: "impossible squat", time: [60, 180], sets: [1, 2] },
+                { name: "jumping lunges", reps: [40, 80], sets: [1, 3] },
+                { name: "lunges", reps: [50, 100], sets: [1, 2] },
+                { name: "weighted lunges", reps: [40, 80], sets: [1, 3] },
+                { name: "sissy squat", reps: [4, 12], sets: [1, 4] },
+                { name: "nordics", reps: [10, 15], sets: [1, 4] },
+                { name: "reverse nordics", reps: [10, 15], sets: [1, 4] },
+                { name: "assisted pistol squat", reps: [4, 10], sets: [1, 3] },
+                { name: "pistol squat", reps: [3, 6], sets: [1, 3] },
+                { name: "explosive squat", reps: [30, 50], sets: [1, 3] },
+                { name: "squats", reps: [1, 100], sets: [1, 6] },
+                { name: "calf raises hold", time: [60, 90], sets: [1, 2] },
+                { name: "pause calf raises", reps: [20, 30], sets: [2, 4] },
+                { name: "slow calf raises", reps: [20, 30], sets: [2, 4] },
+                { name: "tibialis raise", reps: [20, 35], sets: [2, 4] },
+                { name: "one leg hip thrust", reps: [12, 20], sets: [1, 4] }
+            ]
+        };
+
+        let currentAudio = null;
+
+        function getRandomValue(range) {
+            if (range.includes("max")) {
+                // If range only contains "max", always return "max"
+                if (range.length === 1 && range[0] === "max") {
+                    return "max";
+                }
+                // If range has numbers and "max", randomly choose
+                return Math.random() < 0.3 ? "max" : Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+            }
+            return Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+        }
+
+        function generateWorkout() {
+            const selectedCategories = [];
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            checkboxes.forEach(checkbox => {
+                selectedCategories.push(checkbox.value);
+            });
+
+            if (selectedCategories.length === 0) {
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Hide error message if categories are selected
+            errorMessage.classList.add('hidden');
+
+            // Collect all exercises from selected categories
+            let allExercises = [];
+            selectedCategories.forEach(category => {
+                allExercises = allExercises.concat(exercises[category]);
+            });
+
+            // Generate 5-15 exercises
+            const numExercises = Math.floor(Math.random() * 11) + 5; // 5-15
+            const selectedExercises = [];
+
+            for (let i = 0; i < numExercises && i < allExercises.length; i++) {
+                const randomIndex = Math.floor(Math.random() * allExercises.length);
+                const exercise = { ...allExercises[randomIndex] };
+                allExercises.splice(randomIndex, 1); // Remove to avoid duplicates
+
+                // Generate random values
+                if (exercise.reps) {
+                    exercise.generatedReps = getRandomValue(exercise.reps);
+                }
+                if (exercise.time) {
+                    exercise.generatedTime = getRandomValue(exercise.time);
+                }
+                exercise.generatedSets = getRandomValue(exercise.sets);
+                
+                if (exercise.squeeze) {
+                    exercise.squeezeActivated = Math.random() < 0.5;
+                }
+
+                selectedExercises.push(exercise);
+            }
+
+            displayWorkout(selectedExercises);
+        }
+
+        function displayWorkout(exercises) {
+            const workoutSection = document.getElementById('workoutSection');
+            const workoutContent = document.getElementById('workoutContent');
+            
+            workoutContent.innerHTML = '';
+
+            exercises.forEach((exercise, index) => {
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.className = 'exercise-item';
+                exerciseDiv.style.animationDelay = `${index * 0.1}s`;
+
+                let exerciseText = exercise.name;
+                
+                if (exercise.generatedReps !== undefined) {
+                    exerciseText += `, reps ${exercise.generatedReps}`;
+                }
+                if (exercise.generatedTime !== undefined) {
+                    exerciseText += `, time ${exercise.generatedTime}${typeof exercise.generatedTime === 'number' ? 's' : ''}`;
+                }
+                exerciseText += `, sets ${exercise.generatedSets}`;
+                
+                if (exercise.squeezeActivated) {
+                    exerciseText += ', squeeze mode activated';
+                }
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'exercise-text';
+                textSpan.textContent = exerciseText;
+                exerciseDiv.appendChild(textSpan);
+
+                if (exercise.squeezeActivated) {
+                    const playBtn = document.createElement('button');
+                    playBtn.className = 'play-btn';
+                    playBtn.textContent = 'SQUEEZE';
+                    playBtn.onclick = () => toggleAudio(playBtn);
+                    exerciseDiv.appendChild(playBtn);
+                }
+
+                workoutContent.appendChild(exerciseDiv);
+            });
+
+            workoutSection.classList.remove('hidden');
+        }
+
+        function toggleAudio(button) {
+            const audio = document.getElementById('workoutAudio');
+            
+            if (currentAudio && currentAudio !== button) {
+                // Stop other audio and reset button
+                audio.pause();
+                audio.currentTime = 0;
+                currentAudio.textContent = 'SQUEEZE';
+            }
+
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    console.log('Audio play failed:', e);
+                    alert('Audio could not be played. Make sure audio.mp3 is in the same folder as this HTML file.');
+                });
+                button.textContent = 'STOP';
+                currentAudio = button;
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+                button.textContent = 'SQUEEZE';
+                currentAudio = null;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('generateBtn').addEventListener('click', generateWorkout);
+
+        // Hide error message when any checkbox is checked
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const errorMessage = document.getElementById('errorMessage');
+                const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+                if (anyChecked) {
+                    errorMessage.classList.add('hidden');
+                }
+            });
+        });
+
+        // Reset audio when it ends naturally
+        document.getElementById('workoutAudio').addEventListener('ended', () => {
+            if (currentAudio) {
+                currentAudio.textContent = 'SQUEEZE';
+                currentAudio = null;
+            }
+        });
+    </script>
+</body>
+</html>
