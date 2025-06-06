@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="6d48536e-b1a0-49a6-8794-6d3facb5c1b8" type="text/javascript" async></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FM05EJBM0Z"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-FM05EJBM0Z');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anabolic Workout Generator</title>
@@ -259,7 +269,7 @@
 </head>
 <body>
     <!-- Place audio.mp3 file in the same folder as this HTML file -->
-    <audio id="workoutAudio" loop>
+    <audio id="workoutAudio" loop onended="handleAudioEnded()">
         <source src="audio.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -267,21 +277,21 @@
     <div class="container">
         <h1>Anabolic Workout Generator</h1>
         
-        <button class="generate-btn" id="generateBtn">GENERATE</button>
+        <button class="generate-btn" id="generateBtn" onclick="generateWorkout()">GENERATE</button>
         
         <div id="errorMessage" class="error-message hidden">Please select at least one category!</div>
         
         <div class="checkboxes">
             <div class="checkbox-group">
-                <input type="checkbox" id="upper" value="upper">
+                <input type="checkbox" id="upper" value="upper" onchange="handleCheckboxChange()">
                 <label for="upper">Upper</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="core" value="core">
+                <input type="checkbox" id="core" value="core" onchange="handleCheckboxChange()">
                 <label for="core">Core</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="legs" value="legs">
+                <input type="checkbox" id="legs" value="legs" onchange="handleCheckboxChange()">
                 <label for="legs">Legs</label>
             </div>
         </div>
@@ -292,7 +302,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cookieconsent="ignore">
         // Exercise data
         const exercises = {
             upper: [
@@ -404,14 +414,25 @@
                 allExercises = allExercises.concat(exercises[category]);
             });
 
+            // Remove duplicates based on exercise name
+            const uniqueExercises = [];
+            const seenNames = new Set();
+            allExercises.forEach(exercise => {
+                if (!seenNames.has(exercise.name)) {
+                    seenNames.add(exercise.name);
+                    uniqueExercises.push(exercise);
+                }
+            });
+
             // Generate 5-15 exercises
             const numExercises = Math.floor(Math.random() * 11) + 5; // 5-15
             const selectedExercises = [];
 
-            for (let i = 0; i < numExercises && i < allExercises.length; i++) {
-                const randomIndex = Math.floor(Math.random() * allExercises.length);
-                const exercise = { ...allExercises[randomIndex] };
-                allExercises.splice(randomIndex, 1); // Remove to avoid duplicates
+            // Shuffle the unique exercises array
+            const shuffledExercises = [...uniqueExercises].sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < Math.min(numExercises, shuffledExercises.length); i++) {
+                const exercise = { ...shuffledExercises[i] };
 
                 // Generate random values
                 if (exercise.reps) {
@@ -501,26 +522,30 @@
             }
         }
 
-        // Event listeners
-        document.getElementById('generateBtn').addEventListener('click', generateWorkout);
+        // Initialize the app when DOM is loaded and after potential cookie consent
+        function initializeApp() {
+            // No need for event listeners since we're using inline handlers
+            console.log('App initialized');
+        }
 
-        // Hide error message when any checkbox is checked
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const errorMessage = document.getElementById('errorMessage');
-                const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
-                if (anyChecked) {
-                    errorMessage.classList.add('hidden');
-                }
-            });
-        });
+        function handleCheckboxChange() {
+            const errorMessage = document.getElementById('errorMessage');
+            const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+            if (anyChecked) {
+                errorMessage.classList.add('hidden');
+            }
+        }
 
-        // Reset audio when it ends naturally
-        document.getElementById('workoutAudio').addEventListener('ended', () => {
+        function handleAudioEnded() {
             if (currentAudio) {
                 currentAudio.textContent = 'SQUEEZE';
                 currentAudio = null;
             }
+        }
+
+        // Simple initialization without complex event handling
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
         });
     </script>
 </body>
