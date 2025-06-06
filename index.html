@@ -269,7 +269,7 @@
 </head>
 <body>
     <!-- Place audio.mp3 file in the same folder as this HTML file -->
-    <audio id="workoutAudio" loop>
+    <audio id="workoutAudio" loop onended="handleAudioEnded()">
         <source src="audio.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -277,21 +277,21 @@
     <div class="container">
         <h1>Anabolic Workout Generator</h1>
         
-        <button class="generate-btn" id="generateBtn">GENERATE</button>
+        <button class="generate-btn" id="generateBtn" onclick="generateWorkout()">GENERATE</button>
         
         <div id="errorMessage" class="error-message hidden">Please select at least one category!</div>
         
         <div class="checkboxes">
             <div class="checkbox-group">
-                <input type="checkbox" id="upper" value="upper">
+                <input type="checkbox" id="upper" value="upper" onchange="handleCheckboxChange()">
                 <label for="upper">Upper</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="core" value="core">
+                <input type="checkbox" id="core" value="core" onchange="handleCheckboxChange()">
                 <label for="core">Core</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="legs" value="legs">
+                <input type="checkbox" id="legs" value="legs" onchange="handleCheckboxChange()">
                 <label for="legs">Legs</label>
             </div>
         </div>
