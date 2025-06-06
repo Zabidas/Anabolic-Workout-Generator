@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="6d48536e-b1a0-49a6-8794-6d3facb5c1b8" type="text/javascript" async></script>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FM05EJBM0Z"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-FM05EJBM0Z');
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anabolic Workout Generator</title>
@@ -414,25 +404,14 @@
                 allExercises = allExercises.concat(exercises[category]);
             });
 
-            // Remove duplicates based on exercise name
-            const uniqueExercises = [];
-            const seenNames = new Set();
-            allExercises.forEach(exercise => {
-                if (!seenNames.has(exercise.name)) {
-                    seenNames.add(exercise.name);
-                    uniqueExercises.push(exercise);
-                }
-            });
-
             // Generate 5-15 exercises
             const numExercises = Math.floor(Math.random() * 11) + 5; // 5-15
             const selectedExercises = [];
 
-            // Shuffle the unique exercises array
-            const shuffledExercises = [...uniqueExercises].sort(() => Math.random() - 0.5);
-
-            for (let i = 0; i < Math.min(numExercises, shuffledExercises.length); i++) {
-                const exercise = { ...shuffledExercises[i] };
+            for (let i = 0; i < numExercises && i < allExercises.length; i++) {
+                const randomIndex = Math.floor(Math.random() * allExercises.length);
+                const exercise = { ...allExercises[randomIndex] };
+                allExercises.splice(randomIndex, 1); // Remove to avoid duplicates
 
                 // Generate random values
                 if (exercise.reps) {
@@ -523,29 +502,7 @@
         }
 
         // Event listeners
-        a
-        function bindGenerateButton() {
-            const btn = document.getElementById('generateBtn');
-            if (btn) {
-                btn.removeEventListener('click', generateWorkout); // avoid duplicate listeners
-                btn.addEventListener('click', generateWorkout);
-            }
-        }
-
-        // If Cookiebot is present and consent already given
-        if (typeof Cookiebot !== 'undefined') {
-            if (Cookiebot.consents.given || Cookiebot.consents.preferences) {
-                bindGenerateButton();
-            }
-
-            window.addEventListener("CookiebotOnAccept", function () {
-                bindGenerateButton();
-            });
-        } else {
-            // Cookiebot not present, bind immediately
-            bindGenerateButton();
-        }
-
+        document.getElementById('generateBtn').addEventListener('click', generateWorkout);
 
         // Hide error message when any checkbox is checked
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
