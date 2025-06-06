@@ -269,7 +269,7 @@
 </head>
 <body>
     <!-- Place audio.mp3 file in the same folder as this HTML file -->
-    <audio id="workoutAudio" loop onended="handleAudioEnded()">
+    <audio id="workoutAudio" loop>
         <source src="audio.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -277,21 +277,21 @@
     <div class="container">
         <h1>Anabolic Workout Generator</h1>
         
-        <button class="generate-btn" id="generateBtn" onclick="generateWorkout()">GENERATE</button>
+        <button class="generate-btn" id="generateBtn">GENERATE</button>
         
         <div id="errorMessage" class="error-message hidden">Please select at least one category!</div>
         
         <div class="checkboxes">
             <div class="checkbox-group">
-                <input type="checkbox" id="upper" value="upper" onchange="handleCheckboxChange()">
+                <input type="checkbox" id="upper" value="upper">
                 <label for="upper">Upper</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="core" value="core" onchange="handleCheckboxChange()">
+                <input type="checkbox" id="core" value="core">
                 <label for="core">Core</label>
             </div>
             <div class="checkbox-group">
-                <input type="checkbox" id="legs" value="legs" onchange="handleCheckboxChange()">
+                <input type="checkbox" id="legs" value="legs">
                 <label for="legs">Legs</label>
             </div>
         </div>
@@ -302,7 +302,7 @@
         </div>
     </div>
 
-    <script data-cookieconsent="ignore">
+    <script>
         // Exercise data
         const exercises = {
             upper: [
@@ -522,31 +522,33 @@
             }
         }
 
-        // Initialize the app when DOM is loaded and after potential cookie consent
-        function initializeApp() {
-            // No need for event listeners since we're using inline handlers
-            console.log('App initialized');
-        }
+        // Event listeners
+        document.getElementById('generateBtn').addEventListener('click', generateWorkout);
 
-        function handleCheckboxChange() {
-            const errorMessage = document.getElementById('errorMessage');
-            const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
-            if (anyChecked) {
-                errorMessage.classList.add('hidden');
-            }
-        }
+        // Hide error message when any checkbox is checked
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const errorMessage = document.getElementById('errorMessage');
+                const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+                if (anyChecked) {
+                    errorMessage.classList.add('hidden');
+                }
+            });
+        });
 
-        function handleAudioEnded() {
+        // Reset audio when it ends naturally
+        document.getElementById('workoutAudio').addEventListener('ended', () => {
             if (currentAudio) {
                 currentAudio.textContent = 'SQUEEZE';
                 currentAudio = null;
             }
-        }
-
-        // Simple initialization without complex event handling
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded');
         });
     </script>
+    <script>
+    window.addEventListener('CookieConsentDeclaration', function () {
+        // Reload the page when a consent decision is made
+        location.reload();
+    });
+</script>
 </body>
 </html>
