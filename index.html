@@ -414,14 +414,25 @@
                 allExercises = allExercises.concat(exercises[category]);
             });
 
+            // Remove duplicates based on exercise name
+            const uniqueExercises = [];
+            const seenNames = new Set();
+            allExercises.forEach(exercise => {
+                if (!seenNames.has(exercise.name)) {
+                    seenNames.add(exercise.name);
+                    uniqueExercises.push(exercise);
+                }
+            });
+
             // Generate 5-15 exercises
             const numExercises = Math.floor(Math.random() * 11) + 5; // 5-15
             const selectedExercises = [];
 
-            for (let i = 0; i < numExercises && i < allExercises.length; i++) {
-                const randomIndex = Math.floor(Math.random() * allExercises.length);
-                const exercise = { ...allExercises[randomIndex] };
-                allExercises.splice(randomIndex, 1); // Remove to avoid duplicates
+            // Shuffle the unique exercises array
+            const shuffledExercises = [...uniqueExercises].sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < Math.min(numExercises, shuffledExercises.length); i++) {
+                const exercise = { ...shuffledExercises[i] };
 
                 // Generate random values
                 if (exercise.reps) {
