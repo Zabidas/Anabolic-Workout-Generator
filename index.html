@@ -522,27 +522,60 @@
             }
         }
 
-        // Event listeners
-        document.getElementById('generateBtn').addEventListener('click', generateWorkout);
+        // Initialize the app when DOM is loaded and after potential cookie consent
+        function initializeApp() {
+            // Event listeners
+            const generateBtn = document.getElementById('generateBtn');
+            if (generateBtn) {
+                // Remove any existing listeners to prevent duplicates
+                generateBtn.removeEventListener('click', generateWorkout);
+                generateBtn.addEventListener('click', generateWorkout);
+            }
 
-        // Hide error message when any checkbox is checked
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const errorMessage = document.getElementById('errorMessage');
-                const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
-                if (anyChecked) {
-                    errorMessage.classList.add('hidden');
-                }
+            // Hide error message when any checkbox is checked
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.removeEventListener('change', handleCheckboxChange);
+                checkbox.addEventListener('change', handleCheckboxChange);
             });
-        });
 
-        // Reset audio when it ends naturally
-        document.getElementById('workoutAudio').addEventListener('ended', () => {
+            // Reset audio when it ends naturally
+            const workoutAudio = document.getElementById('workoutAudio');
+            if (workoutAudio) {
+                workoutAudio.removeEventListener('ended', handleAudioEnded);
+                workoutAudio.addEventListener('ended', handleAudioEnded);
+            }
+        }
+
+        function handleCheckboxChange() {
+            const errorMessage = document.getElementById('errorMessage');
+            const anyChecked = document.querySelectorAll('input[type="checkbox"]:checked').length > 0;
+            if (anyChecked) {
+                errorMessage.classList.add('hidden');
+            }
+        }
+
+        function handleAudioEnded() {
             if (currentAudio) {
                 currentAudio.textContent = 'SQUEEZE';
                 currentAudio = null;
             }
-        });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        // Also initialize after a short delay to handle cookie consent scenarios
+        setTimeout(initializeApp, 1000);
+
+        // Listen for Cookiebot events if available
+        if (typeof window.Cookiebot !== 'undefined') {
+            window.addEventListener('CookiebotOnAccept', initializeApp);
+            window.addEventListener('CookiebotOnDecline', initializeApp);
+        }
     </script>
 </body>
 </html>
